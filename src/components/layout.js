@@ -3,6 +3,10 @@ import PropTypes from 'prop-types';
 import styled, { ThemeProvider } from 'styled-components';
 import { Head, Loader, Nav, Social, Email, Footer } from '@components';
 import { GlobalStyle, theme } from '@styles';
+import WizardCursor from './WizardCursor';
+import WalkingWizard from './WalkingWizard';
+import AchievementSystem from './AchievementSystem';
+import usePerformanceMonitoring from '@hooks/usePerformanceMonitoring';
 
 const StyledContent = styled.div`
   display: flex;
@@ -13,6 +17,9 @@ const StyledContent = styled.div`
 const Layout = ({ children, location }) => {
   const isHome = location.pathname === '/';
   const [isLoading, setIsLoading] = useState(isHome);
+
+  // Performance monitoring
+  usePerformanceMonitoring();
 
   // Sets target="_blank" rel="noopener noreferrer" on external links
   const handleExternalLinks = () => {
@@ -46,6 +53,26 @@ const Layout = ({ children, location }) => {
     handleExternalLinks();
   }, [isLoading]);
 
+  // Pause animations during scroll to reduce repaint/glitching
+  useEffect(() => {
+    let timeout;
+    const onScroll = () => {
+      document.body.classList.add('is-scrolling');
+      clearTimeout(timeout);
+      timeout = setTimeout(() => document.body.classList.remove('is-scrolling'), 200);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) document.body.classList.remove('is-scrolling');
+    });
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      clearTimeout(timeout);
+    };
+  }, []);
+
   return (
     <>
       <Head />
@@ -53,6 +80,8 @@ const Layout = ({ children, location }) => {
       <div id="root">
         <ThemeProvider theme={theme}>
           <GlobalStyle />
+          <WalkingWizard />
+          <AchievementSystem />
 
           <a className="skip-to-content" href="#content">
             Skip to Content

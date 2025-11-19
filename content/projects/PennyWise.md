@@ -1,6 +1,13 @@
 ---
 date: '2025-01-01'
 title: 'PennyWise'
+cover: '../featured/PennyWise/demo.png'
+images:
+  - '../featured/PennyWise/demo.png'
+  - '../featured/PennyWise/demo-1.png'
+  - '../featured/PennyWise/demo-2.png'
+  - '../featured/PennyWise/demo-3.jpeg'
+  - '../featured/PennyWise/demo-4.png'
 github: 'https://github.com/Rabie-Zerrim/PennyWise'
 external: ''
 tech:

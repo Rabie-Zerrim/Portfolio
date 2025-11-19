@@ -55,9 +55,10 @@ const Hero = () => {
       return;
     }
 
-    const timeout = setTimeout(() => setIsMounted(true), navDelay);
+    // Always animate on mount, even after refresh
+    const timeout = setTimeout(() => setIsMounted(true), 100);
     return () => clearTimeout(timeout);
-  }, []);
+  }, [prefersReducedMotion]);
 
   const one = <h1>Hi, my name is</h1>;
   const two = <h2 className="big-heading">Rabie Zerrim.</h2>;
@@ -65,8 +66,8 @@ const Hero = () => {
   const four = (
     <>
       <p>
-        I’m a software architecture engineer student specializing in building (and occasionally designing)
-        digital experiences. Currently, I’m focused on building accessible, human-centered projects
+        I’m a final year software architecture engineer student specializing in building (and occasionally designing)
+        digital experiences. Currently, I’m studying 
         at{' '}
         <a href="https://esprit.tn/" target="_blank" rel="noreferrer">
           ESPRIT

@@ -135,16 +135,11 @@ const About = () => {
         <StyledText>
           <div>
                         <p>
-              Hello! I'm Rabie, a passionate software architecture engineering student with a strong focus on building
-              innovative solutions. My journey in software development has been driven by a deep interest in AI, web development,
-              and creating impactful digital experiences.
+           
             </p>
 
             <p>
-              Throughout my career, I've had the opportunity to work with various technologies and frameworks at{' '}
-              <a href="#">Axess Logistique</a> where I enhanced AI assistants, at{' '}
-              <a href="#">Center Mon fils</a> where I developed ML-powered video analysis systems, and at{' '}
-              <a href="https://aiesec.org">AIESEC</a> where I worked on web development and technical content.
+             
             </p>
 
             <p>
@@ -153,12 +148,10 @@ const About = () => {
               with modern web frameworks to create innovative solutions that solve real-world problems.
             </p>
 
-            <p>Here are a few technologies I’ve been working with recently:</p>
+           
           </div>
 
-          <ul className="skills-list">
-            {skills && skills.map((skill, i) => <li key={i}>{skill}</li>)}
-          </ul>
+          
         </StyledText>
 
         <StyledPic>

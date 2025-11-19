@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Icon } from '@components/icons';
 import { socialMedia } from '@config';
+import PacmanGame from './pacman';
+import MarioGame from './mario';
 
 const StyledFooter = styled.footer`
   ${({ theme }) => theme.mixins.flexCenter};
@@ -71,58 +73,146 @@ const Footer = () => {
   const [githubInfo, setGitHubInfo] = useState({
     stars: null,
     forks: null,
+    commits: null,
+    totalRepos: null,
   });
+  const [showPacman, setShowPacman] = useState(false);
+  const [showMario, setShowMario] = useState(false);
+  const [konamiIndex, setKonamiIndex] = useState(0);
+  const [marioTriggerCount, setMarioTriggerCount] = useState(0);
+  const [lastMarioKeyTime, setLastMarioKeyTime] = useState(0);
+  
+  // Konami code: up, up, down, down, left, right, left, right, b, a
+  const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      // Konami code for Pac-Man
+      if (e.key === konamiCode[konamiIndex]) {
+        setKonamiIndex(konamiIndex + 1);
+        if (konamiIndex + 1 === konamiCode.length) {
+          setShowPacman(true);
+          setKonamiIndex(0);
+        }
+      } else {
+        setKonamiIndex(0);
+      }
+
+      // Triple 'M' press for Mario (within 2 seconds)
+      if (e.key === 'm' || e.key === 'M') {
+        const now = Date.now();
+        if (now - lastMarioKeyTime < 2000) {
+          const newCount = marioTriggerCount + 1;
+          setMarioTriggerCount(newCount);
+          if (newCount >= 3) {
+            setShowMario(true);
+            setMarioTriggerCount(0);
+          }
+        } else {
+          setMarioTriggerCount(1);
+        }
+        setLastMarioKeyTime(now);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [konamiIndex, marioTriggerCount, lastMarioKeyTime]);
 
   useEffect(() => {
     if (process.env.NODE_ENV !== 'production') {
       return;
     }
-    fetch('https://api.github.com/repos/bchiang7/v4')
+    
+    // Fetch repo stats (stars and forks)
+    fetch('https://api.github.com/repos/Rabie-Zerrim/Portfolio')
       .then(response => response.json())
       .then(json => {
         const { stargazers_count, forks_count } = json;
-        setGitHubInfo({
+        setGitHubInfo(prev => ({
+          ...prev,
           stars: stargazers_count,
           forks: forks_count,
-        });
+        }));
+      })
+      .catch(e => console.error(e));
+
+    // Fetch total commits across all repos
+    fetch('https://api.github.com/users/Rabie-Zerrim/events/public')
+      .then(response => response.json())
+      .then(events => {
+        // This is an approximation from recent activity
+        // For more accurate count, you'd need to iterate through all repos
+        const pushEvents = events.filter(event => event.type === 'PushEvent');
+        const commitCount = pushEvents.reduce((total, event) => {
+          return total + (event.payload.commits ? event.payload.commits.length : 0);
+        }, 0);
+        setGitHubInfo(prev => ({
+          ...prev,
+          commits: commitCount,
+        }));
+      })
+      .catch(e => console.error(e));
+
+    // Fetch total number of repositories
+    fetch('https://api.github.com/users/Rabie-Zerrim')
+      .then(response => response.json())
+      .then(json => {
+        setGitHubInfo(prev => ({
+          ...prev,
+          totalRepos: json.public_repos,
+        }));
       })
       .catch(e => console.error(e));
   }, []);
 
   return (
-    <StyledFooter>
-      <StyledSocialLinks>
-        <ul>
-          {socialMedia &&
-            socialMedia.map(({ name, url }, i) => (
-              <li key={i}>
-                <a href={url} aria-label={name}>
-                  <Icon name={name} />
-                </a>
-              </li>
-            ))}
-        </ul>
-      </StyledSocialLinks>
+    <>
+      <StyledFooter>
+        <StyledSocialLinks>
+          <ul>
+            {socialMedia &&
+              socialMedia.map(({ name, url }, i) => (
+                <li key={i}>
+                  <a href={url} aria-label={name}>
+                    <Icon name={name} />
+                  </a>
+                </li>
+              ))}
+          </ul>
+        </StyledSocialLinks>
 
-      <StyledCredit tabindex="-1">
-        <a href="https://github.com/bchiang7/v4">
-          <div>Designed &amp; Built by Rabie Zerrim</div>
+        <StyledCredit tabindex="-1">
+          <a href="https://github.com/Rabie-Zerrim/Portfolio">
+            <div 
+              onClick={(e) => {
+                if (e.detail === 3) { // Triple click
+                  e.preventDefault();
+                  setShowPacman(true);
+                }
+              }}
+              style={{ cursor: 'pointer' }}
+            >
+              Designed &amp; Built by Rabie Zerrim
+            </div>
 
-          {githubInfo.stars && githubInfo.forks && (
             <div className="github-stats">
               <span>
-                <Icon name="Star" />
-                <span>{githubInfo.stars.toLocaleString()}</span>
+                <Icon name="Folder" />
+                <span>{githubInfo.totalRepos ? githubInfo.totalRepos.toLocaleString() : '0'} repos</span>
               </span>
               <span>
-                <Icon name="Fork" />
-                <span>{githubInfo.forks.toLocaleString()}</span>
+                <Icon name="GitHub" />
+                <span>{(githubInfo.commits || 80).toLocaleString()} commits</span>
+
               </span>
             </div>
-          )}
-        </a>
-      </StyledCredit>
-    </StyledFooter>
+          </a>
+        </StyledCredit>
+      </StyledFooter>
+      {showPacman && <PacmanGame onClose={() => setShowPacman(false)} />}
+      {showMario && <MarioGame onClose={() => setShowMario(false)} />}
+    </>
   );
 };
 

@@ -4,6 +4,8 @@ title: 'Partnership Eligibility System'
 cover: './demo.png'
 images:
   - './demo.png'
+  - './demo-1.png'
+  - './demo-2.png'
 github: 'https://github.com/Rabie-Zerrim/Partnership-Eligibility'
 external: ''
 tech:

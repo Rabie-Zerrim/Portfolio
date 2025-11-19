@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { useStaticQuery, graphql } from 'gatsby';
+import { useStaticQuery, graphql, withPrefix } from 'gatsby';
 import { GatsbyImage, getImage } from 'gatsby-plugin-image';
 import styled from 'styled-components';
 import sr from '@utils/sr';
@@ -274,7 +274,7 @@ const StyledProject = styled.li`
     a {
       width: 100%;
       height: 100%;
-      background-color: var(--green);
+      background-color: transparent;
       border-radius: var(--border-radius);
       vertical-align: middle;
 
@@ -301,13 +301,12 @@ const StyledProject = styled.li`
         bottom: 0;
         z-index: 3;
         transition: var(--transition);
-        background-color: var(--navy);
-        mix-blend-mode: screen;
+        background-color: rgba(10, 25, 47, 0.4);
+        mix-blend-mode: multiply;
       }
     }    .img {
       border-radius: var(--border-radius);
-      mix-blend-mode: multiply;
-      filter: grayscale(100%) contrast(1) brightness(90%);
+      transition: var(--transition);
 
       @media (max-width: 768px) {
         object-fit: cover;
@@ -330,14 +329,16 @@ const Featured = () => {
           node {
             frontmatter {
               title
+              coverGif
               cover {
+                publicURL
                 childImageSharp {
-                  gatsbyImageData(width: 700, placeholder: BLURRED, formats: [AUTO, WEBP, AVIF])
+                  gatsbyImageData(width: 700, quality: 95, placeholder: DOMINANT_COLOR, formats: [AUTO, WEBP, AVIF])
                 }
               }
               images {
                 childImageSharp {
-                  gatsbyImageData(width: 700, placeholder: BLURRED, formats: [AUTO, WEBP, AVIF])
+                  gatsbyImageData(width: 700, quality: 95, placeholder: DOMINANT_COLOR, formats: [AUTO, WEBP, AVIF])
                 }
               }
               tech
@@ -368,16 +369,19 @@ const Featured = () => {
   return (
     <section id="projects">
       <h2 className="numbered-heading" ref={revealTitle}>
-        Some Things I’ve Built
+        My Projects
       </h2>
 
       <StyledProjectsGrid>
         {featuredProjects &&
           featuredProjects.map(({ node }, i) => {
             const { frontmatter, html } = node;
-            const { external, title, tech, github, cover, images } = frontmatter;
+            const { external, title, tech, github, cover, images, coverGif } = frontmatter;
             const image = getImage(cover);
-            const imageList = images ? images.map(img => getImage(img)) : [];
+            const imageList = images ? images.map(img => getImage(img)).filter(Boolean) : [];
+            
+            // Use coverGif from static folder if provided, otherwise check for publicURL
+            const gifURL = coverGif ? withPrefix(`/${coverGif}`) : (cover && cover.publicURL && !image ? withPrefix(cover.publicURL) : null);
 
             return (
               <StyledProject key={i} ref={el => (revealProjects.current[i] = el)}>
@@ -386,7 +390,7 @@ const Featured = () => {
                     <p className="project-overline">Featured Project</p>
 
                     <h3 className="project-title">
-                      <a href={external}>{title}</a>
+                      {title}
                     </h3>
 
                     <div
@@ -418,17 +422,17 @@ const Featured = () => {
                 </div>
 
                 <div className="project-image">
-                  {imageList.length > 0 ? (
+                  {gifURL ? (
+                    <img src={gifURL} alt={title} className="img" style={{ width: '100%', height: 'auto' }} />
+                  ) : imageList.length > 0 ? (
                     <div className="carousel-wrapper">
                       <ImageCarousel 
                         images={imageList}
                       />
                     </div>
-                  ) : (
-                    <a href={external ? external : github ? github : '#'}>
-                      <GatsbyImage image={image} alt={title} className="img" />
-                    </a>
-                  )}
+                  ) : image ? (
+                    <GatsbyImage image={image} alt={title} className="img" />
+                  ) : null}
                 </div>
               </StyledProject>
             );

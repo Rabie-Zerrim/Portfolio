@@ -2,10 +2,14 @@
 date: '3'
 title: 'Axess AI Assistant'
 cover: './demo.png'
+images:
+  - './demo.png'
+  - './demo-1.png'
+  - './demo-2.png'
 github: ''
 external: 'https://www.axesslogistique.com/'
 tech:
-  - Vue.js
+  - Nest.js
   - Symfony
   - Gemini API
   - MySQL

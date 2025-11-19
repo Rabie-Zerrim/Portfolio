@@ -12,6 +12,7 @@ const GlobalStyle = createGlobalStyle`
     box-sizing: border-box;
     width: 100%;
     scroll-behavior: smooth;
+    overflow-y: scroll;
   }
 
   *,
@@ -79,6 +80,7 @@ const GlobalStyle = createGlobalStyle`
     font-family: var(--font-sans);
     font-size: var(--fz-xl);
     line-height: 1.3;
+    position: relative;
 
     @media (max-width: 480px) {
       font-size: var(--fz-lg);
@@ -86,6 +88,8 @@ const GlobalStyle = createGlobalStyle`
 
     &.hidden {
       overflow: hidden;
+      position: fixed;
+      width: 100%;
     }
 
     &.blur {

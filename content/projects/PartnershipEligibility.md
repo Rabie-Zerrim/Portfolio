@@ -1,7 +1,12 @@
 ---
 date: '2025-02-01'
 title: 'AI-Powered Partnership Eligibility Assessment'
-github: ''
+cover: '../featured/PartnershipEligibility/demo.png'
+images:
+  - '../featured/PartnershipEligibility/demo.png'
+  - '../featured/PartnershipEligibility/demo-1.png'
+  - '../featured/PartnershipEligibility/demo-2.png'
+github: 'https://github.com/Rabie-Zerrim/Intelligent-Partnership-Assistant-IPA-'
 external: ''
 tech:
   - Flask

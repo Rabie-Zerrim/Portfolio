@@ -5,7 +5,7 @@
   "author": "Rabie Zerrim <rabiezerrimgmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bchiang7/v4"
+    "url": "https://github.com/Rabie-Zerrim/Portfolio"
   },
   "keywords": [
     "gatsby"
@@ -21,8 +21,8 @@
     "clean": "gatsby clean",
     "prepare": "husky install",
     "lint-staged": "lint-staged",
-    "deploy": "gatsby build && gh-pages -d public",
-    "deploy:ci": "gatsby build && gh-pages -d public -r https://$GH_TOKEN@github.com/username/repo.git"
+    "deploy": "gatsby build --prefix-paths && gh-pages -d public",
+    "deploy:ci": "gatsby build --prefix-paths && gh-pages -d public -r https://$GH_TOKEN@github.com/Rabie-Zerrim/Portfolio.git"
   },
   "lint-staged": {
     "*.{js,css,json,md}": [

@@ -1,7 +1,8 @@
 ---
 date: '2025-03-01'
 title: 'Coding Factory'
-github: ''
+cover: './images/CodingFactory/coding-factory-cover.png'
+github: 'https://github.com/Rabie-Zerrim/Coding-Factory'
 external: ''
 tech:
   - Spring Boot

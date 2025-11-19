@@ -1,6 +1,10 @@
 ---
 date: '2025-04-01'
 title: 'Partnership Management'
+cover: '../featured/PartnershipManagement/demo.png'
+images:
+  - '../featured/PartnershipManagement/demo.png'
+  - '../featured/PartnershipManagement/demo-1.png'
 github: 'https://github.com/Rabie-Zerrim/Partnership-Management'
 external: ''
 tech:

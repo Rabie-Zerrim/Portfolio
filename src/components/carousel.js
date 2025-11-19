@@ -8,7 +8,7 @@ const StyledCarouselContainer = styled.div`
   width: 100%;
   height: 100%;
   border-radius: var(--border-radius);
-  background-color: var(--green);
+  background-color: transparent;
 
   &:before {
     content: '';
@@ -16,9 +16,10 @@ const StyledCarouselContainer = styled.div`
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: var(--navy);
-    mix-blend-mode: screen;
+    background-color: rgba(10, 25, 47, 0.4);
+    mix-blend-mode: multiply;
     transition: var(--transition);
+    z-index: 1;
   }
 
   &:hover {
@@ -41,8 +42,6 @@ const StyledImageContainer = styled.div`
 
   .img {
     border-radius: var(--border-radius);
-    mix-blend-mode: multiply;
-    filter: grayscale(100%) contrast(1) brightness(90%);
     transition: var(--transition);
 
     @media (max-width: 768px) {
@@ -93,7 +92,7 @@ const ImageCarousel = ({ images }) => {
 
     const timer = setInterval(() => {
       setCurrentIndex(current => (current + 1) % images.length);
-    }, 3000);
+    }, 5000);
 
     return () => clearInterval(timer);
   }, [images, prefersReducedMotion]);

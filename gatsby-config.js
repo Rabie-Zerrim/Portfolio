@@ -2,13 +2,33 @@ const config = require('./src/config');
 require('events').EventEmitter.defaultMaxListeners = 15; // Or any higher number
 
 module.exports = {
+  pathPrefix: '/Portfolio',
   siteMetadata: {
-    title: 'Rabie Zerrim',
+    title: 'Rabie Zerrim - Software Engineer & Full-Stack Developer',
     description:
-      'Rabie Zerrim is a software engineer who specializes in building (and occasionally designing) exceptional digital experiences.',
-    siteUrl: 'https://brittanychiang.com', // No trailing slash allowed!
+      'Rabie Zerrim is a software engineer who specializes in building exceptional digital experiences. Expert in React, Spring Boot, Django, and modern web technologies. Portfolio showcasing 12+ innovative projects.',
+    siteUrl: 'https://rabie-zerrim.github.io', // No trailing slash allowed!
     image: '/og.png', // Path to your image you placed in the 'static' folder
     twitterUsername: '@Bakedhyun',
+    author: 'Rabie Zerrim',
+    keywords: [
+      'Rabie Zerrim',
+      'Software Engineer',
+      'Full-Stack Developer',
+      'React Developer',
+      'Spring Boot',
+      'Django',
+      'Web Development',
+      'Portfolio',
+      'JavaScript',
+      'TypeScript',
+      'Node.js',
+      'Software Development',
+    ],
+    siteLanguage: 'en',
+    ogLanguage: 'en_US',
+    github: 'https://github.com/Rabie-Zerrim',
+    linkedin: 'https://linkedin.com/in/rabie-zerrim',
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
@@ -16,18 +36,99 @@ module.exports = {
     `gatsby-plugin-image`,
     `gatsby-plugin-sharp`,
     `gatsby-transformer-sharp`,
-    `gatsby-plugin-sitemap`,
-    `gatsby-plugin-robots-txt`,
+    {
+      resolve: `gatsby-plugin-sitemap`,
+      options: {
+        output: '/',
+        query: `
+          {
+            site {
+              siteMetadata {
+                siteUrl
+              }
+            }
+            allSitePage {
+              nodes {
+                path
+              }
+            }
+          }
+        `,
+        resolveSiteUrl: () => 'https://rabie-zerrim.github.io',
+        resolvePages: ({ allSitePage: { nodes: allPages } }) => {
+          return allPages.map(page => {
+            return { ...page };
+          });
+        },
+        serialize: ({ path }) => {
+          // Determine priority and change frequency
+          let priority = 0.5;
+          let changefreq = 'monthly';
+
+          if (path === '/') {
+            priority = 1.0;
+            changefreq = 'weekly';
+          } else if (path.includes('/pensieve/')) {
+            priority = 0.7;
+            changefreq = 'monthly';
+          } else if (path === '/archive/') {
+            priority = 0.8;
+            changefreq = 'weekly';
+          }
+
+          return {
+            url: path,
+            changefreq,
+            priority,
+            lastmod: new Date().toISOString(),
+          };
+        },
+      },
+    },
+    {
+      resolve: `gatsby-plugin-robots-txt`,
+      options: {
+        host: 'https://rabie-zerrim.github.io',
+        sitemap: 'https://rabie-zerrim.github.io/sitemap-index.xml',
+        policy: [
+          {
+            userAgent: '*',
+            allow: '/',
+            disallow: ['/404', '/404.html'],
+          },
+        ],
+      },
+    },
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: 'Rabie Zerrim',
+        name: 'Rabie Zerrim - Software Engineer Portfolio',
         short_name: 'Rabie Zerrim',
+        description: 'Software Engineer Portfolio showcasing innovative projects and technical expertise',
         start_url: '/',
         background_color: config.colors.darkNavy,
         theme_color: config.colors.navy,
-        display: 'minimal-ui',
+        display: 'standalone',
         icon: 'src/images/logo.png',
+        icons: [
+          {
+            src: 'src/images/logo.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
+          {
+            src: 'src/images/logo.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
+        ],
+        categories: ['portfolio', 'development', 'technology'],
+        lang: 'en',
+        orientation: 'portrait-primary',
+        cache_busting_mode: 'none',
+        crossOrigin: 'use-credentials',
       },
     },
     `gatsby-plugin-offline`,
