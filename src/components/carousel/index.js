@@ -1,31 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { GatsbyImage } from 'gatsby-plugin-image';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 import { usePrefersReducedMotion } from '@hooks';
-
-const StyledCarouselContainer = styled.div`
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background-color: var(--green);
-  border-radius: var(--border-radius);
-
-  &:hover {
-    background: transparent;
-
-    .img {
-      filter: none !important;
-    }
-    
-    .carousel-controls {
-      opacity: 1;
-    }
-
-    ${StyledImageContainer}:before {
-      background: transparent;
-    }
-  }
-`;
 
 const StyledImageContainer = styled.div`
   width: 100%;
@@ -59,12 +36,38 @@ const StyledImageContainer = styled.div`
     &:before {
       background: transparent;
     }
-    
+
     .img {
       filter: none !important;
     }
   }
 `;
+
+const StyledCarouselContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: var(--green);
+  border-radius: var(--border-radius);
+
+  &:hover {
+    background: transparent;
+
+    .img {
+      filter: none !important;
+    }
+
+    .carousel-controls {
+      opacity: 1;
+    }
+
+    ${StyledImageContainer}:before {
+      background: transparent;
+    }
+  }
+`;
+
+/* StyledImageContainer moved earlier to avoid use-before-define */
 
 const StyledControlButton = styled.button`
   position: absolute;
@@ -158,7 +161,9 @@ const ImageCarousel = ({ images, onImageClick }) => {
 
   const startTimer = useCallback(() => {
     // don't start if user prefers reduced motion, hovered, or not enough images
-    if (prefersReducedMotion || !images || images.length <= 1 || isHoveredRef.current) {return;}
+    if (prefersReducedMotion || !images || images.length <= 1 || isHoveredRef.current) {
+      return;
+    }
     clearTimer();
     timerRef.current = setInterval(() => {
       setCurrentIndex(current => (current + 1) % images.length);
@@ -199,7 +204,9 @@ const ImageCarousel = ({ images, onImageClick }) => {
     startTimer();
   };
 
-  if (!images || images.length === 0) {return null;}
+  if (!images || images.length === 0) {
+    return null;
+  }
 
   return (
     <StyledCarouselContainer onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
@@ -208,13 +215,13 @@ const ImageCarousel = ({ images, onImageClick }) => {
           image={images[currentIndex].gatsbyImageData}
           alt="Project Demo"
           className="img"
-          style={{ 
+          style={{
             height: '100%',
             mixBlendMode: 'multiply',
             filter: 'grayscale(100%) contrast(1) brightness(90%)',
             borderRadius: 'var(--border-radius)',
           }}
-          imgStyle={{ 
+          imgStyle={{
             transition: 'var(--transition)',
             borderRadius: 'var(--border-radius)',
           }}
@@ -222,17 +229,27 @@ const ImageCarousel = ({ images, onImageClick }) => {
       </StyledImageContainer>
 
       {images.length > 1 && (
-        <div className="carousel-controls" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none' }}>
-          <StyledControlButton 
-            className="prev" 
+        <div
+          className="carousel-controls"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            pointerEvents: 'none',
+          }}
+        >
+          <StyledControlButton
+            className="prev"
             onClick={prevSlide}
             style={{ pointerEvents: 'auto' }}
             aria-label="Previous image"
           >
             ←
           </StyledControlButton>
-          <StyledControlButton 
-            className="next" 
+          <StyledControlButton
+            className="next"
             onClick={nextSlide}
             style={{ pointerEvents: 'auto' }}
             aria-label="Next image"
@@ -253,6 +270,19 @@ const ImageCarousel = ({ images, onImageClick }) => {
       )}
     </StyledCarouselContainer>
   );
+};
+
+ImageCarousel.propTypes = {
+  images: PropTypes.arrayOf(
+    PropTypes.shape({
+      gatsbyImageData: PropTypes.object,
+    }),
+  ).isRequired,
+  onImageClick: PropTypes.func,
+};
+
+ImageCarousel.defaultProps = {
+  onImageClick: () => {},
 };
 
 export default ImageCarousel;
