@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { GatsbyImage } from 'gatsby-plugin-image';
 import styled from 'styled-components';
+import { usePrefersReducedMotion } from '@hooks';
 
 const StyledCarouselContainer = styled.div`
   position: relative;
@@ -144,14 +145,33 @@ const StyledDot = styled.button`
 
 const ImageCarousel = ({ images, onImageClick }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const timerRef = useRef(null);
+  const isHoveredRef = useRef(false);
 
-  const nextSlide = (e) => {
+  const clearTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  const startTimer = useCallback(() => {
+    // don't start if user prefers reduced motion, hovered, or not enough images
+    if (prefersReducedMotion || !images || images.length <= 1 || isHoveredRef.current) {return;}
+    clearTimer();
+    timerRef.current = setInterval(() => {
+      setCurrentIndex(current => (current + 1) % images.length);
+    }, 5000);
+  }, [images, prefersReducedMotion]);
+
+  const nextSlide = e => {
     e.preventDefault();
     e.stopPropagation();
     setCurrentIndex(current => (current + 1) % images.length);
   };
 
-  const prevSlide = (e) => {
+  const prevSlide = e => {
     e.preventDefault();
     e.stopPropagation();
     setCurrentIndex(current => (current - 1 + images.length) % images.length);
@@ -163,10 +183,26 @@ const ImageCarousel = ({ images, onImageClick }) => {
     setCurrentIndex(index);
   };
 
-  if (!images || images.length === 0) return null;
+  // autoplay effect: start when images are available and component mounts
+  useEffect(() => {
+    startTimer();
+    return () => clearTimer();
+  }, [startTimer]);
+
+  const handleMouseEnter = () => {
+    isHoveredRef.current = true;
+    clearTimer();
+  };
+
+  const handleMouseLeave = () => {
+    isHoveredRef.current = false;
+    startTimer();
+  };
+
+  if (!images || images.length === 0) {return null;}
 
   return (
-    <StyledCarouselContainer>
+    <StyledCarouselContainer onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <StyledImageContainer onClick={onImageClick}>
         <GatsbyImage
           image={images[currentIndex].gatsbyImageData}
@@ -176,11 +212,11 @@ const ImageCarousel = ({ images, onImageClick }) => {
             height: '100%',
             mixBlendMode: 'multiply',
             filter: 'grayscale(100%) contrast(1) brightness(90%)',
-            borderRadius: 'var(--border-radius)'
+            borderRadius: 'var(--border-radius)',
           }}
           imgStyle={{ 
             transition: 'var(--transition)',
-            borderRadius: 'var(--border-radius)'
+            borderRadius: 'var(--border-radius)',
           }}
         />
       </StyledImageContainer>
@@ -208,7 +244,7 @@ const ImageCarousel = ({ images, onImageClick }) => {
               <StyledDot
                 key={index}
                 active={index === currentIndex}
-                onClick={(e) => goToSlide(e, index)}
+                onClick={e => goToSlide(e, index)}
                 aria-label={`Go to image ${index + 1}`}
               />
             ))}
