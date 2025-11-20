@@ -27,17 +27,17 @@ workbox.core.clientsClaim();
  */
 self.__precacheManifest = [
   {
-    "url": "webpack-runtime-9f77fe2f82a226bc76d4.js"
+    "url": "webpack-runtime-87157437f7c54fcd141d.js"
   },
   {
     "url": "framework-11dbb24a71245e1d8949.js"
   },
   {
-    "url": "app-3236a1b0813caa210178.js"
+    "url": "app-6c4e739d16e03f608b14.js"
   },
   {
     "url": "offline-plugin-app-shell-fallback/index.html",
-    "revision": "ffad3f83c0d0e76d7da2aa82e2e26763"
+    "revision": "0a962970c5de876d1bbcd95a06dba057"
   },
   {
     "url": "component---cache-caches-gatsby-plugin-offline-app-shell-js-6f061b09cc63f0400406.js"
@@ -48,7 +48,7 @@ self.__precacheManifest = [
   },
   {
     "url": "page-data/app-data.json",
-    "revision": "eb3667a9b95d792a83ee8b89845d1fb5"
+    "revision": "c956b23c9edae677c29a6be4bcfb92ec"
   },
   {
     "url": "manifest.webmanifest",
@@ -144,7 +144,7 @@ const navigationRoute = new NavigationRoute(async ({ event }) => {
   // Check for resources + the app bundle
   // The latter may not exist if the SW is updating to a new version
   const resources = await idbKeyval.get(`resources:${pathname}`)
-  if (!resources || !(await caches.match(`/Portfolio/app-3236a1b0813caa210178.js`))) {
+  if (!resources || !(await caches.match(`/Portfolio/app-6c4e739d16e03f608b14.js`))) {
     return await fetch(event.request)
   }
 
