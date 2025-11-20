@@ -161,7 +161,10 @@ const ImageCarousel = ({ images, onImageClick }) => {
 
   const startTimer = useCallback(() => {
     // don't start if user prefers reduced motion, hovered, or not enough images
-    if (prefersReducedMotion || !images || images.length <= 1 || isHoveredRef.current) {
+    if (prefersReducedMotion || isHoveredRef.current) {
+      return;
+    }
+    if (!images || images.length <= 1) {
       return;
     }
     clearTimer();
@@ -192,6 +195,27 @@ const ImageCarousel = ({ images, onImageClick }) => {
   useEffect(() => {
     startTimer();
     return () => clearTimer();
+  }, [startTimer]);
+
+  // Some clients may receive an older cached page or hydrate later;
+  // ensure autoplay starts shortly after mount and whenever images become available.
+  useEffect(() => {
+    const id = setTimeout(() => startTimer(), 500);
+    return () => clearTimeout(id);
+  }, [startTimer, images]);
+
+  // Pause/play when page visibility changes (helpful on SPA navigations)
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.hidden) {
+        clearTimer();
+      } else {
+        startTimer();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
   }, [startTimer]);
 
   const handleMouseEnter = () => {
