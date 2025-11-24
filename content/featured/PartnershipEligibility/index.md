@@ -6,6 +6,7 @@ images:
   - './demo.png'
   - './demo-1.png'
   - './demo-2.png'
+video: './demo video.mp4'
 github: 'https://github.com/Rabie-Zerrim/Partnership-Eligibility'
 external: ''
 tech:
@@ -16,6 +17,4 @@ tech:
   - Jenkins
 ---
 
-A comprehensive eligibility assessment system designed to evaluate and validate potential business partnerships. This system automates the complex process of determining partnership compatibility and compliance with organizational requirements.
-
-The platform features automated eligibility checks, customizable assessment criteria, document verification, and detailed reporting capabilities, all wrapped in a user-friendly interface for efficient decision-making.
+A comprehensive eligibility assessment system designed to evaluate and validate potential business partnerships. This system automates the complex process of determining partnership compatibility and compliance with organizational requirements. Features include automated eligibility checks, customizable assessment criteria, document verification, detailed reporting capabilities, and a user-friendly interface for efficient decision-making.

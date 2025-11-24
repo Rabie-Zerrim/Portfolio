@@ -8,14 +8,16 @@ const GalleryOverlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(10, 25, 47, 0.95);
+  background: linear-gradient(135deg, rgba(10, 25, 47, 0.98) 0%, rgba(2, 12, 27, 0.98) 100%);
+  backdrop-filter: blur(10px);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: ${props => (props.isVisible ? '1' : '0')};
   visibility: ${props => (props.isVisible ? 'visible' : 'hidden')};
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 20px;
 `;
 
@@ -37,12 +39,18 @@ const ImageContainer = styled.div`
   max-width: 100%;
   max-height: 80vh;
 
-  img {
+  img,
+  video {
     max-width: 100%;
     max-height: 80vh;
     object-fit: contain;
-    border-radius: var(--border-radius);
-    box-shadow: 0 10px 30px -15px var(--navy-shadow);
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(100, 255, 218, 0.1);
+    transition: transform 0.3s ease;
+  }
+
+  img:hover {
+    transform: scale(1.02);
   }
 `;
 
@@ -50,28 +58,40 @@ const CloseButton = styled.button`
   position: absolute;
   top: -50px;
   right: 0;
-  background: transparent;
-  border: none;
+  background: linear-gradient(135deg, rgba(100, 255, 218, 0.1) 0%, rgba(100, 255, 218, 0.05) 100%);
+  border: 1px solid rgba(100, 255, 218, 0.3);
+  border-radius: 50%;
   color: var(--lightest-slate);
   cursor: pointer;
-  padding: 10px;
+  padding: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1001;
+  backdrop-filter: blur(8px);
 
   svg {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
+    transition: transform 0.3s ease;
   }
 
   &:hover {
     color: var(--green);
+    background: linear-gradient(135deg, rgba(100, 255, 218, 0.2) 0%, rgba(100, 255, 218, 0.1) 100%);
+    border-color: var(--green);
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 8px 20px rgba(100, 255, 218, 0.3);
+  }
+
+  &:active {
+    transform: scale(1.05) rotate(90deg);
   }
 
   &:focus {
-    outline: none;
+    outline: 2px solid rgba(100, 255, 218, 0.4);
+    outline-offset: 2px;
   }
 `;
 
@@ -79,47 +99,64 @@ const NavigationButton = styled.button`
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  ${props => (props.direction === 'prev' ? 'left: 10px;' : 'right: 10px;')}
-  background-color: rgba(10, 25, 47, 0.8);
-  border: 1px solid var(--green);
+  ${props => (props.direction === 'prev' ? 'left: 20px;' : 'right: 20px;')}
+  background: linear-gradient(135deg, rgba(100, 255, 218, 0.15) 0%, rgba(100, 255, 218, 0.08) 100%);
+  border: 1px solid rgba(100, 255, 218, 0.3);
   color: var(--green);
   cursor: pointer;
-  padding: 15px;
+  padding: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1001;
+  backdrop-filter: blur(8px);
 
   svg {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
+    transition: transform 0.3s ease;
   }
 
-  &:hover {
-    background-color: var(--green-tint);
+  &:hover:not(:disabled) {
+    background: linear-gradient(
+      135deg,
+      rgba(100, 255, 218, 0.25) 0%,
+      rgba(100, 255, 218, 0.15) 100%
+    );
     border-color: var(--green);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 8px 20px rgba(100, 255, 218, 0.3);
+
+    svg {
+      transform: ${props => (props.direction === 'prev' ? 'translateX(-2px)' : 'translateX(2px)')};
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(-50%) scale(1.05);
   }
 
   &:focus {
-    outline: none;
+    outline: 2px solid rgba(100, 255, 218, 0.4);
+    outline-offset: 2px;
   }
 
   &:disabled {
-    opacity: 0.3;
+    opacity: 0.2;
     cursor: not-allowed;
     border-color: var(--slate);
     color: var(--slate);
   }
 
   @media (max-width: 768px) {
-    padding: 10px;
-    ${props => (props.direction === 'prev' ? 'left: 5px;' : 'right: 5px;')}
+    padding: 12px;
+    ${props => (props.direction === 'prev' ? 'left: 10px;' : 'right: 10px;')}
 
     svg {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
     }
   }
 `;
@@ -127,9 +164,15 @@ const NavigationButton = styled.button`
 const ImageCounter = styled.div`
   font-family: var(--font-mono);
   font-size: var(--fz-sm);
-  color: var(--slate);
+  color: var(--lightest-slate);
   text-align: center;
-  margin-top: 10px;
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: rgba(10, 25, 47, 0.7);
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(100, 255, 218, 0.1);
+  display: inline-block;
 `;
 
 const ThumbnailContainer = styled.div`
@@ -147,24 +190,33 @@ const ThumbnailContainer = styled.div`
 `;
 
 const Thumbnail = styled.button`
-  width: 80px;
-  height: 60px;
-  border: 2px solid ${props => (props.isActive ? 'var(--green)' : 'transparent')};
+  width: 50px;
+  height: 40px;
+  border: 2px solid ${props => (props.isActive ? 'var(--green)' : 'rgba(100, 255, 218, 0.2)')};
   border-radius: 4px;
   overflow: hidden;
   cursor: pointer;
   padding: 0;
-  background: none;
-  transition: var(--transition);
+  background: rgba(10, 25, 47, 0.5);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: ${props => (props.isActive ? '1' : '0.6')};
+  position: relative;
+  box-shadow: ${props => (props.isActive ? '0 0 20px rgba(100, 255, 218, 0.4)' : 'none')};
 
   &:hover {
     opacity: 1;
     border-color: var(--green);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 16px rgba(100, 255, 218, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0) scale(1.02);
   }
 
   &:focus {
-    outline: none;
+    outline: 2px solid rgba(100, 255, 218, 0.4);
+    outline-offset: 2px;
   }
 
   img {
@@ -173,9 +225,20 @@ const Thumbnail = styled.button`
     object-fit: cover;
   }
 
+  svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    color: var(--green);
+    z-index: 1;
+  }
+
   @media (max-width: 768px) {
-    width: 60px;
-    height: 45px;
+    width: 45px;
+    height: 35px;
   }
 `;
 
@@ -212,9 +275,15 @@ const ImageGallery = ({ images, initialIndex, onClose }) => {
 
   const handleKeyDown = useCallback(
     e => {
-      if (e.key === 'Escape') {handleClose();}
-      if (e.key === 'ArrowLeft') {handlePrevious();}
-      if (e.key === 'ArrowRight') {handleNext();}
+      if (e.key === 'Escape') {
+        handleClose();
+      }
+      if (e.key === 'ArrowLeft') {
+        handlePrevious();
+      }
+      if (e.key === 'ArrowRight') {
+        handleNext();
+      }
     },
     [handleClose, handlePrevious, handleNext],
   );
@@ -224,7 +293,14 @@ const ImageGallery = ({ images, initialIndex, onClose }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  if (!images || images.length === 0) {return null;}
+  if (!images || images.length === 0) {
+    return null;
+  }
+
+  const isVideo = url => url && (url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.ogg'));
+
+  const currentMedia = images[currentIndex];
+  const isCurrentVideo = isVideo(currentMedia);
 
   return (
     <GalleryOverlay isVisible={isVisible} onClick={handleClose}>
@@ -281,11 +357,19 @@ const ImageGallery = ({ images, initialIndex, onClose }) => {
             </>
           )}
 
-          <img
-            src={images[currentIndex]}
-            alt={`Project screenshot ${currentIndex + 1}`}
-            loading="lazy"
-          />
+          {isCurrentVideo ? (
+            <video
+              src={currentMedia}
+              controls
+              autoPlay
+              style={{ maxWidth: '100%', maxHeight: '80vh' }}
+            >
+              <track kind="captions" />
+              Your browser does not support the video tag.
+            </video>
+          ) : (
+            <img src={currentMedia} alt={`Project screenshot ${currentIndex + 1}`} loading="lazy" />
+          )}
         </ImageContainer>
 
         {images.length > 1 && (
@@ -295,16 +379,29 @@ const ImageGallery = ({ images, initialIndex, onClose }) => {
             </ImageCounter>
 
             <ThumbnailContainer>
-              {images.map((image, index) => (
-                <Thumbnail
-                  key={index}
-                  isActive={index === currentIndex}
-                  onClick={() => setCurrentIndex(index)}
-                  aria-label={`View image ${index + 1}`}
-                >
-                  <img src={image} alt={`Thumbnail ${index + 1}`} />
-                </Thumbnail>
-              ))}
+              {images.map((image, index) => {
+                const isThumbnailVideo = isVideo(image);
+                return (
+                  <Thumbnail
+                    key={index}
+                    isActive={index === currentIndex}
+                    onClick={() => setCurrentIndex(index)}
+                    aria-label={`View ${isThumbnailVideo ? 'video' : 'image'} ${index + 1}`}
+                  >
+                    {isThumbnailVideo ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                      </svg>
+                    ) : (
+                      <img src={image} alt={`Thumbnail ${index + 1}`} />
+                    )}
+                  </Thumbnail>
+                );
+              })}
             </ThumbnailContainer>
           </>
         )}

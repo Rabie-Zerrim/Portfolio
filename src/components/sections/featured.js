@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useStaticQuery, graphql, withPrefix } from 'gatsby';
 import { GatsbyImage, getImage } from 'gatsby-plugin-image';
 import styled from 'styled-components';
@@ -7,6 +7,7 @@ import { srConfig } from '@config';
 import { Icon } from '@components/icons';
 import { usePrefersReducedMotion } from '@hooks';
 import ImageCarousel from '@components/carousel';
+import ImageGallery from '@components/imageGallery';
 
 const StyledProjectsGrid = styled.ul`
   ${({ theme }) => theme.mixins.resetList};
@@ -243,7 +244,7 @@ const StyledProject = styled.li`
     }
   }
 
-    .project-image {
+  .project-image {
     ${({ theme }) => theme.mixins.boxShadow};
     grid-column: 6 / -1;
     grid-row: 1 / -1;
@@ -261,13 +262,43 @@ const StyledProject = styled.li`
     .carousel-wrapper {
       position: relative;
       width: 100%;
-      height: 100%;
+      height: 400px;
       border-radius: var(--border-radius);
       vertical-align: middle;
       overflow: hidden;
+      cursor: pointer;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
 
       @media (max-width: 768px) {
         opacity: 0.25;
+        height: 100%;
+      }
+
+      &:hover {
+        .gallery-hint {
+          opacity: 1;
+        }
+      }
+
+      .gallery-hint {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(10, 25, 47, 0.9);
+        color: var(--green);
+        padding: 8px 15px;
+        border-radius: 4px;
+        font-family: var(--font-mono);
+        font-size: var(--fz-xs);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 10;
       }
     }
 
@@ -304,9 +335,14 @@ const StyledProject = styled.li`
         background-color: rgba(10, 25, 47, 0.4);
         mix-blend-mode: multiply;
       }
-    }    .img {
+    }
+    .img {
       border-radius: var(--border-radius);
       transition: var(--transition);
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      object-position: center;
 
       @media (max-width: 768px) {
         object-fit: cover;
@@ -333,13 +369,27 @@ const Featured = () => {
               cover {
                 publicURL
                 childImageSharp {
-                  gatsbyImageData(width: 700, quality: 95, placeholder: DOMINANT_COLOR, formats: [AUTO, WEBP, AVIF])
+                  gatsbyImageData(
+                    width: 500
+                    quality: 90
+                    placeholder: DOMINANT_COLOR
+                    formats: [AUTO, WEBP, AVIF]
+                  )
                 }
               }
               images {
+                publicURL
                 childImageSharp {
-                  gatsbyImageData(width: 700, quality: 95, placeholder: DOMINANT_COLOR, formats: [AUTO, WEBP, AVIF])
+                  gatsbyImageData(
+                    width: 700
+                    quality: 95
+                    placeholder: DOMINANT_COLOR
+                    formats: [AUTO, WEBP, AVIF]
+                  )
                 }
+              }
+              video {
+                publicURL
               }
               tech
               github
@@ -356,6 +406,17 @@ const Featured = () => {
   const revealTitle = useRef(null);
   const revealProjects = useRef([]);
   const prefersReducedMotion = usePrefersReducedMotion();
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [galleryInitialIndex, setGalleryInitialIndex] = useState(0);
+
+  const handleImageClick = (images, index = 0) => {
+    if (images && images.length > 0) {
+      setGalleryImages(images);
+      setGalleryInitialIndex(index);
+      setGalleryOpen(true);
+    }
+  };
 
   useEffect(() => {
     if (prefersReducedMotion) {
@@ -376,12 +437,33 @@ const Featured = () => {
         {featuredProjects &&
           featuredProjects.map(({ node }, i) => {
             const { frontmatter, html } = node;
-            const { external, title, tech, github, cover, images, coverGif } = frontmatter;
+            const { external, title, tech, github, cover, images, coverGif, video } = frontmatter;
             const image = getImage(cover);
+
+            // For Partnerly project, crop the cover image to smaller dimensions
+            const isPartnerly = title === 'Partnerly - Partnership Management';
             const imageList = images ? images.map(img => getImage(img)).filter(Boolean) : [];
-            
+
+            // Get image URLs for gallery
+            let imageUrls =
+              images
+                ?.map(
+                  img =>
+                    img?.publicURL || img?.childImageSharp?.gatsbyImageData?.images?.fallback?.src,
+                )
+                .filter(Boolean) || [];
+
+            // Add video to gallery if exists
+            if (video?.publicURL) {
+              imageUrls = [...imageUrls, video.publicURL];
+            }
+
             // Use coverGif from static folder if provided, otherwise check for publicURL
-            const gifURL = coverGif ? withPrefix(`/${coverGif}`) : (cover && cover.publicURL && !image ? withPrefix(cover.publicURL) : null);
+            const gifURL = coverGif
+              ? withPrefix(`/${coverGif}`)
+              : cover && cover.publicURL && !image
+                ? withPrefix(cover.publicURL)
+                : null;
 
             return (
               <StyledProject key={i} ref={el => (revealProjects.current[i] = el)}>
@@ -389,9 +471,7 @@ const Featured = () => {
                   <div>
                     <p className="project-overline">Featured Project</p>
 
-                    <h3 className="project-title">
-                      {title}
-                    </h3>
+                    <h3 className="project-title">{title}</h3>
 
                     <div
                       className="project-description"
@@ -407,7 +487,7 @@ const Featured = () => {
                     )}
 
                     <div className="project-links">
-                        {github && (
+                      {github && (
                         <a href={github} aria-label="GitHub Link">
                           <Icon name="GitHub" />
                         </a>
@@ -422,22 +502,85 @@ const Featured = () => {
                 </div>
 
                 <div className="project-image">
-                  {gifURL ? (
-                    <img src={gifURL} alt={title} className="img" style={{ width: '100%', height: 'auto' }} />
-                  ) : imageList.length > 0 ? (
-                    <div className="carousel-wrapper">
-                      <ImageCarousel 
-                        images={imageList}
+                  {gifURL && imageUrls.length > 0 ? (
+                    <div
+                      className="carousel-wrapper"
+                      onClick={() => handleImageClick(imageUrls, 0)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyPress={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          handleImageClick(imageUrls, 0);
+                        }
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <img
+                        src={gifURL}
+                        alt={title}
+                        className="img"
+                        style={{ width: '100%', height: 'auto' }}
                       />
+                      {imageUrls.length > 1 && (
+                        <div className="gallery-hint">
+                          <span role="img" aria-label="gallery">
+                            🖼️
+                          </span>{' '}
+                          {imageUrls.length} items
+                        </div>
+                      )}
+                    </div>
+                  ) : gifURL ? (
+                    <img
+                      src={gifURL}
+                      alt={title}
+                      className="img"
+                      style={{ width: '100%', height: 'auto' }}
+                    />
+                  ) : imageList.length > 0 ? (
+                    <div
+                      className="carousel-wrapper"
+                      onClick={() => handleImageClick(imageUrls, 0)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyPress={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          handleImageClick(imageUrls, 0);
+                        }
+                      }}
+                    >
+                      <ImageCarousel images={imageList} />
+                      {imageUrls.length > 1 && (
+                        <div className="gallery-hint">
+                          <span role="img" aria-label="gallery">
+                            🖼️
+                          </span>{' '}
+                          {imageUrls.length} items
+                        </div>
+                      )}
                     </div>
                   ) : image ? (
-                    <GatsbyImage image={image} alt={title} className="img" />
+                    <GatsbyImage
+                      image={image}
+                      alt={title}
+                      className="img"
+                      style={isPartnerly ? { height: '350px', width: '100%' } : {}}
+                      imgStyle={isPartnerly ? { objectFit: 'cover', objectPosition: 'center' } : {}}
+                    />
                   ) : null}
                 </div>
               </StyledProject>
             );
           })}
       </StyledProjectsGrid>
+
+      {galleryOpen && (
+        <ImageGallery
+          images={galleryImages}
+          initialIndex={galleryInitialIndex}
+          onClose={() => setGalleryOpen(false)}
+        />
+      )}
     </section>
   );
 };

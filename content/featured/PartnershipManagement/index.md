@@ -5,6 +5,7 @@ cover: './demo.png'
 images:
   - './demo.png'
   - './demo-1.png'
+video: './of pi - Made with Clipchamp.mp4'
 github: 'https://github.com/Rabie-Zerrim/Partnership-Management'
 external: ''
 tech:
@@ -17,8 +18,4 @@ tech:
   - TypeScript
 ---
 
-A sophisticated partnership management platform designed to streamline business collaboration and relationship tracking. The system provides comprehensive tools for managing partnerships throughout their lifecycle, from initial assessment to ongoing relationship management.
-
-**Key Results:** Increased partnership ROI tracking accuracy by 90% • Managed 300+ active partnerships with automated workflows • Reduced document processing time by 75% • Enabled real-time collaboration for 50+ team members • Cut administrative overhead by 50% through automation
-
-Key features include partnership lifecycle management, automated status tracking, document management, analytics dashboard with KPI tracking, and role-based access control. Built with a modern tech stack ensuring scalability and maintainability.
+A sophisticated partnership management platform designed to streamline business collaboration and relationship tracking. The system provides comprehensive tools for managing partnerships throughout their lifecycle, with features including automated status tracking, document management, and analytics dashboard with KPI tracking. Successfully increased partnership ROI tracking accuracy by 90% and managed 300+ active partnerships with automated workflows. Built with modern tech stack ensuring scalability and maintainability, featuring role-based access control and real-time collaboration capabilities.
