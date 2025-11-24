@@ -55,11 +55,7 @@ module.exports = {
           }
         `,
         resolveSiteUrl: () => 'https://rabie-zerrim.github.io',
-        resolvePages: ({ allSitePage: { nodes: allPages } }) => {
-          return allPages.map(page => {
-            return { ...page };
-          });
-        },
+        resolvePages: ({ allSitePage: { nodes: allPages } }) => allPages.map(page => ({ ...page })),
         serialize: ({ path }) => {
           // Determine priority and change frequency
           let priority = 0.5;
@@ -104,7 +100,8 @@ module.exports = {
       options: {
         name: 'Rabie Zerrim - Software Engineer Portfolio',
         short_name: 'Rabie Zerrim',
-        description: 'Software Engineer Portfolio showcasing innovative projects and technical expertise',
+        description:
+          'Software Engineer Portfolio showcasing innovative projects and technical expertise',
         start_url: '/',
         background_color: config.colors.darkNavy,
         theme_color: config.colors.navy,
@@ -251,11 +248,6 @@ module.exports = {
         ],
       },
     },
-    {
-      resolve: `gatsby-plugin-google-analytics`,
-      options: {
-        trackingId: 'UA-45666519-2',
-      },
-    },
+    // Plausible will be injected via gatsby-ssr.js using the site-specific snippet
   ],
 };

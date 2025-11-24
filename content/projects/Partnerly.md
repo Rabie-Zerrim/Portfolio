@@ -1,5 +1,5 @@
 ---
-date: '2025-11-01'
+date: '2024-11-01'
 title: 'Partnerly - Partnership Management'
 cover: '../featured/Partnerly/demo.png'
 images:
@@ -22,6 +22,7 @@ showInProjects: true
 ---
 
 Modern Flutter application for managing business partnerships with comprehensive features:
+
 - Real-time status tracking with automated reminders for pending verifications and expirations
 - Interactive analytics dashboard with charts visualizing partnership distribution and trends
 - Smart archiving system with automatic date validation to maintain data integrity

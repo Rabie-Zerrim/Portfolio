@@ -7,6 +7,7 @@ import sr from '@utils/sr';
 import { Icon } from '@components/icons';
 import TechIcon from '@components/icons/tech';
 import { usePrefersReducedMotion } from '@hooks';
+import ImageGallery from '@components/imageGallery';
 
 const StyledProjectsSection = styled.section`
   display: flex;
@@ -95,8 +96,8 @@ const FilterButton = styled.button`
   padding: 10px 20px;
   font-family: var(--font-mono);
   font-size: var(--fz-xs);
-  background-color: ${props => props.active ? 'var(--green)' : 'transparent'};
-  color: ${props => props.active ? 'var(--navy)' : 'var(--green)'};
+  background-color: ${props => (props.active ? 'var(--green)' : 'transparent')};
+  color: ${props => (props.active ? 'var(--navy)' : 'var(--green)')};
   border: 1px solid var(--green);
   border-radius: var(--border-radius);
   cursor: pointer;
@@ -104,7 +105,7 @@ const FilterButton = styled.button`
 
   &:hover {
     background-color: var(--green-tint);
-    color: ${props => props.active ? 'var(--navy)' : 'var(--green)'};
+    color: ${props => (props.active ? 'var(--navy)' : 'var(--green)')};
   }
 
   &:focus {
@@ -177,6 +178,45 @@ const StyledProject = styled.li`
     background-color: var(--light-navy);
     transition: var(--transition);
     overflow: auto;
+  }
+
+  .project-cover {
+    width: 100%;
+    height: 200px;
+    margin-bottom: 20px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+
+    &:hover img {
+      transform: scale(1.05);
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-hint {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: rgba(10, 25, 47, 0.9);
+      color: var(--green);
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: var(--fz-xxs);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    &:hover .gallery-hint {
+      opacity: 1;
+    }
   }
 
   .project-top {
@@ -288,6 +328,12 @@ const Projects = () => {
               github
               external
               date
+              cover {
+                publicURL
+              }
+              images {
+                publicURL
+              }
             }
             html
           }
@@ -300,6 +346,9 @@ const Projects = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTech, setSelectedTech] = useState('All');
   const [sortBy, setSortBy] = useState('date');
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [galleryInitialIndex, setGalleryInitialIndex] = useState(0);
   const revealTitle = useRef(null);
   const revealArchiveLink = useRef(null);
   const revealProjects = useRef([]);
@@ -332,7 +381,7 @@ const Projects = () => {
       const { title, tech } = node.frontmatter;
       const htmlText = node.html.replace(/<[^>]*>/g, ''); // Strip HTML tags
       const searchLower = searchTerm.toLowerCase();
-      
+
       return (
         title.toLowerCase().includes(searchLower) ||
         htmlText.toLowerCase().includes(searchLower) ||
@@ -343,9 +392,7 @@ const Projects = () => {
 
   // Apply tech filter
   if (selectedTech !== 'All') {
-    projects = projects.filter(({ node }) => 
-      node.frontmatter.tech?.includes(selectedTech)
-    );
+    projects = projects.filter(({ node }) => node.frontmatter.tech?.includes(selectedTech));
   }
 
   // Apply sorting
@@ -364,12 +411,42 @@ const Projects = () => {
   const firstSix = projects.slice(0, GRID_LIMIT);
   const projectsToShow = showMore ? projects : firstSix;
 
+  const handleImageClick = (images, index = 0) => {
+    if (images && images.length > 0) {
+      setGalleryImages(images);
+      setGalleryInitialIndex(index);
+      setGalleryOpen(true);
+    }
+  };
+
   const projectInner = node => {
     const { frontmatter, html } = node;
-    const { github, external, title, tech } = frontmatter;
+    const { github, external, title, tech, cover, images } = frontmatter;
+
+    // Convert File objects to URLs with null checks
+    const coverUrl = cover?.publicURL || null;
+    const imageUrls = images?.map(img => img?.publicURL).filter(Boolean) || [];
+    const allImages = imageUrls.length > 0 ? imageUrls : coverUrl ? [coverUrl] : [];
 
     return (
       <div className="project-inner">
+        {allImages.length > 0 && (
+          <div
+            className="project-cover"
+            onClick={() => handleImageClick(allImages, 0)}
+            role="button"
+            tabIndex={0}
+            onKeyPress={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                handleImageClick(allImages, 0);
+              }
+            }}
+          >
+            <img src={allImages[0]} alt={`${title} preview`} />
+            {allImages.length > 1 && <div className="gallery-hint">{allImages.length} images</div>}
+          </div>
+        )}
+
         <header>
           <div className="project-top">
             <div className="folder">
@@ -387,7 +464,8 @@ const Projects = () => {
                   aria-label="External Link"
                   className="external"
                   target="_blank"
-                  rel="noreferrer">
+                  rel="noreferrer"
+                >
                   <Icon name="External" />
                 </a>
               )}
@@ -431,14 +509,20 @@ const Projects = () => {
           type="text"
           placeholder="🔍 Search projects by title, description, or technology..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={e => setSearchTerm(e.target.value)}
         />
-        
+
         <FilterRow>
-          <span style={{ color: 'var(--green)', fontFamily: 'var(--font-mono)', fontSize: 'var(--fz-xs)' }}>
+          <span
+            style={{
+              color: 'var(--green)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: 'var(--fz-xs)',
+            }}
+          >
             Filter:
           </span>
-          {techFilters.slice(0, 8).map((tech) => (
+          {techFilters.slice(0, 8).map(tech => (
             <FilterButton
               key={tech}
               active={selectedTech === tech}
@@ -447,7 +531,7 @@ const Projects = () => {
               {tech}
             </FilterButton>
           ))}
-          <SortSelect value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+          <SortSelect value={sortBy} onChange={e => setSortBy(e.target.value)}>
             <option value="date">Sort by Date</option>
             <option value="title">Sort by Title</option>
           </SortSelect>
@@ -474,13 +558,15 @@ const Projects = () => {
                   key={i}
                   classNames="fadeup"
                   timeout={i >= GRID_LIMIT ? (i - GRID_LIMIT) * 300 : 300}
-                  exit={false}>
+                  exit={false}
+                >
                   <StyledProject
                     key={i}
                     ref={el => (revealProjects.current[i] = el)}
                     style={{
                       transitionDelay: `${i >= GRID_LIMIT ? (i - GRID_LIMIT) * 100 : 0}ms`,
-                    }}>
+                    }}
+                  >
                     {projectInner(node)}
                   </StyledProject>
                 </CSSTransition>
@@ -492,6 +578,14 @@ const Projects = () => {
       <button className="more-button" onClick={() => setShowMore(!showMore)}>
         Show {showMore ? 'Less' : 'More'}
       </button>
+
+      {galleryOpen && (
+        <ImageGallery
+          images={galleryImages}
+          initialIndex={galleryInitialIndex}
+          onClose={() => setGalleryOpen(false)}
+        />
+      )}
     </StyledProjectsSection>
   );
 };

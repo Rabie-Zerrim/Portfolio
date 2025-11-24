@@ -1,6 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /404
-Disallow: /404.html
-Sitemap: https://rabie-zerrim.github.io/sitemap-index.xml
-Host: https://rabie-zerrim.github.io
