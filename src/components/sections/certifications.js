@@ -121,7 +121,7 @@ const Certifications = () => {
       description:
         'Project-oriented excellence program in AI & Data Science, focused on CNNs, ML pipeline optimization, and statistical model evaluation, applied to real-world use cases.',
       icon: '🎓',
-      logo: '/samsung-logo.png',
+      logo: '/Samsung-logo.png',
     },
     {
       title: 'AWS Academy Graduate - Cloud Foundations',
