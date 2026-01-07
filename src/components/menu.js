@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet';
-import { Link } from 'gatsby';
+import { Link, withPrefix } from 'gatsby';
 import styled from 'styled-components';
-import { navLinks } from '@config';
+import { navLinks, resumes } from '@config';
 import { KEY_CODES } from '@utils';
 import { useOnClickOutside } from '@hooks';
-import { withPrefix } from 'gatsby';
 
 const StyledMenu = styled.div`
   display: none;
@@ -154,6 +153,32 @@ const StyledSidebar = styled.aside`
     margin: 10% auto 0;
     width: max-content;
   }
+
+  .resume-section {
+    margin: 10% auto 0;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .resume-title {
+    font-size: var(--fz-sm);
+    color: var(--green);
+    margin-bottom: 15px;
+    text-align: center;
+  }
+
+  .resume-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    a {
+      ${({ theme }) => theme.mixins.bigButton};
+      padding: 15px 30px;
+      width: 100%;
+      text-align: center;
+    }
+  }
 `;
 
 const Menu = () => {
@@ -247,7 +272,8 @@ const Menu = () => {
           onClick={toggleMenu}
           menuOpen={menuOpen}
           ref={buttonRef}
-          aria-label="Menu">
+          aria-label="Menu"
+        >
           <div className="ham-box">
             <div className="ham-box-inner" />
           </div>
@@ -267,9 +293,33 @@ const Menu = () => {
               </ol>
             )}
 
-            <a href={withPrefix('/resume.pdf')} className="resume-link">
-              Resume
-            </a>
+            <div className="resume-section">
+              <div className="resume-title">Resume / CV</div>
+              <div className="resume-options">
+                <a
+                  href={withPrefix(resumes.en)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <span role="img" aria-label="English">
+                    🇬🇧
+                  </span>{' '}
+                  English
+                </a>
+                <a
+                  href={withPrefix(resumes.fr)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <span role="img" aria-label="French">
+                    🇫🇷
+                  </span>{' '}
+                  Français
+                </a>
+              </div>
+            </div>
           </nav>
         </StyledSidebar>
       </div>

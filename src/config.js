@@ -1,6 +1,12 @@
 module.exports = {
   email: 'rabiezerrim@gmail.com',
 
+  // Resume/CV configuration with language support
+  resumes: {
+    en: '/resume-en.pdf',
+    fr: '/resume-fr.pdf',
+  },
+
   socialMedia: [
     {
       name: 'GitHub',
@@ -28,6 +34,18 @@ module.exports = {
     {
       name: 'About',
       url: '/#about',
+    },
+    {
+      name: 'Skills',
+      url: '/#skills',
+    },
+    {
+      name: 'Stats',
+      url: '/#stats',
+    },
+    {
+      name: 'Certifications',
+      url: '/#certifications',
     },
     {
       name: 'Experience',

@@ -57,6 +57,8 @@ import {
   IconSonarQube,
   IconXRay,
   IconNestJS,
+  IconCertificate,
+  IconSamsung,
 } from '@components/icons';
 
 const Icon = ({ name }) => {
@@ -121,63 +123,68 @@ const Icon = ({ name }) => {
       return <IconAzure />;
     case 'TypeScript':
       return <IconTypeScript />;
-      case 'PHP':
-        return <IconPHP />;
-      case 'PyTorch':
-        return <IconPyTorch />;
-      case 'Flutter':
-        return <IconFlutter />;
-      case 'DotNet':
-        return <IconDotNet />;
-      case 'C#':
-      case 'CSharp':
-        return <IconDotNet />;
-      case 'Flask':
-        return <IconFlask />;
-      case 'Hibernate':
-        return <IconHibernate />;
-      case 'Angular':
-        return <IconAngular />;
-      case 'JavaFX':
-        return <IconJavaFX />;
-      case 'GitLab':
-        return <IconGitLab />;
-      case 'Maven':
-        return <IconMaven />;
-      case 'Jest':
-        return <IconJest />;
-      case 'PostgreSQL':
-        return <IconPostgreSQL />;
-      case 'MariaDB':
-        return <IconMariaDB />;
-      case 'Firebase':
-        return <IconFirebase />;
-      case 'Scikit-learn':
-        return <IconScikitLearn />;
-      case 'TensorFlow':
-        return <IconTensorFlow />;
-      case 'Matplotlib':
-        return <IconMatplotlib />;
-      case 'NLP':
-        return <IconNLP />;
-      case 'Figma':
-        return <IconFigma />;
-      case 'Photoshop':
-        return <IconPhotoshop />;
-      case 'Illustrator':
-        return <IconIllustrator />;
-      case 'Jira':
-        return <IconJira />;
-      case 'Trello':
-        return <IconTrello />;
-      case 'SonarQube':
-        return <IconSonarQube />;
-      case 'XRay':
-        return <IconXRay />;
-      case 'Nest.js':
-      case 'NestJS':
-      case 'Nest':
-        return <IconNestJS />;
+    case 'PHP':
+      return <IconPHP />;
+    case 'PyTorch':
+      return <IconPyTorch />;
+    case 'Flutter':
+      return <IconFlutter />;
+    case 'DotNet':
+      return <IconDotNet />;
+    case 'C#':
+    case 'CSharp':
+      return <IconDotNet />;
+    case 'Flask':
+      return <IconFlask />;
+    case 'Hibernate':
+      return <IconHibernate />;
+    case 'Angular':
+      return <IconAngular />;
+    case 'JavaFX':
+      return <IconJavaFX />;
+    case 'GitLab':
+      return <IconGitLab />;
+    case 'Maven':
+      return <IconMaven />;
+    case 'Jest':
+      return <IconJest />;
+    case 'PostgreSQL':
+      return <IconPostgreSQL />;
+    case 'MariaDB':
+      return <IconMariaDB />;
+    case 'Firebase':
+      return <IconFirebase />;
+    case 'Scikit-learn':
+      return <IconScikitLearn />;
+    case 'TensorFlow':
+      return <IconTensorFlow />;
+    case 'Matplotlib':
+      return <IconMatplotlib />;
+    case 'NLP':
+      return <IconNLP />;
+    case 'Figma':
+      return <IconFigma />;
+    case 'Photoshop':
+      return <IconPhotoshop />;
+    case 'Illustrator':
+      return <IconIllustrator />;
+    case 'Jira':
+      return <IconJira />;
+    case 'Trello':
+      return <IconTrello />;
+    case 'SonarQube':
+      return <IconSonarQube />;
+    case 'XRay':
+      return <IconXRay />;
+    case 'Nest.js':
+    case 'NestJS':
+    case 'Nest':
+      return <IconNestJS />;
+    case 'Certificate':
+    case 'Award':
+      return <IconCertificate />;
+    case 'Samsung':
+      return <IconSamsung />;
     default:
       return <IconExternal />;
   }

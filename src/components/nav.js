@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'gatsby';
+import { Link, withPrefix } from 'gatsby';
 import PropTypes from 'prop-types';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import styled, { css } from 'styled-components';
-import { navLinks } from '@config';
+import { navLinks, resumes } from '@config';
 import { loaderDelay } from '@utils';
 import { useScrollDirection, usePrefersReducedMotion } from '@hooks';
 import { Menu } from '@components';
 import { IconLogo, IconHex } from '@components/icons';
-import { withPrefix } from 'gatsby';
 
 const StyledHeader = styled.header`
   ${({ theme }) => theme.mixins.flexBetween};
@@ -149,10 +148,76 @@ const StyledLinks = styled.div`
     margin-left: 15px;
     font-size: var(--fz-xs);
   }
+
+  .resume-dropdown {
+    position: relative;
+    margin-left: 15px;
+  }
+
+  .resume-main-button {
+    ${({ theme }) => theme.mixins.smallButton};
+    font-size: var(--fz-xs);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dropdown-arrow {
+    font-size: 10px;
+    transition: transform 0.3s ease;
+
+    &.open {
+      transform: rotate(180deg);
+    }
+  }
+
+  .resume-options {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: var(--light-navy);
+    border: 1px solid var(--green);
+    border-radius: var(--border-radius);
+    padding: 10px;
+    min-width: 150px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 100;
+
+    &.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    a {
+      display: block;
+      padding: 10px 15px;
+      color: var(--lightest-slate);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: var(--fz-xs);
+      transition: var(--transition);
+      border-radius: 4px;
+
+      &:hover {
+        color: var(--green);
+        background: rgba(100, 255, 218, 0.1);
+      }
+
+      &:not(:last-child) {
+        margin-bottom: 5px;
+      }
+    }
+  }
 `;
 
 const Nav = ({ isHome }) => {
   const [isMounted, setIsMounted] = useState(!isHome);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const scrollDirection = useScrollDirection('down');
   const [scrolledToTop, setScrolledToTop] = useState(true);
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -207,9 +272,40 @@ const Nav = ({ isHome }) => {
   );
 
   const ResumeLink = (
-    <a className="resume-button" href={withPrefix('/resume.pdf')} target="_blank" rel="noopener noreferrer">
-      Resume
-    </a>
+    <div className="resume-dropdown">
+      <button
+        className="resume-main-button"
+        onClick={() => setDropdownOpen(!dropdownOpen)}
+        onBlur={() => setTimeout(() => setDropdownOpen(false), 200)}
+      >
+        Resume
+        <span className={`dropdown-arrow ${dropdownOpen ? 'open' : ''}`}>▼</span>
+      </button>
+      <div className={`resume-options ${dropdownOpen ? 'open' : ''}`}>
+        <a
+          href={withPrefix(resumes.en)}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => setDropdownOpen(false)}
+        >
+          <span role="img" aria-label="English">
+            🇬🇧
+          </span>{' '}
+          English
+        </a>
+        <a
+          href={withPrefix(resumes.fr)}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => setDropdownOpen(false)}
+        >
+          <span role="img" aria-label="French">
+            🇫🇷
+          </span>{' '}
+          Français
+        </a>
+      </div>
+    </div>
   );
 
   return (

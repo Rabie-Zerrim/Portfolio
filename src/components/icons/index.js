@@ -56,3 +56,5 @@ export { default as IconSonarQube } from './sonarqube';
 export { default as IconXRay } from './xray';
 export { default as IconNestJS } from './nestjs';
 export { default as IconPHP } from './php';
+export { default as IconCertificate } from './certificate';
+export { default as IconSamsung } from './samsung';
